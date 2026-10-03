@@ -15,19 +15,19 @@
     repo are removed directly; copies and links pointing elsewhere need -Force.
 
 .EXAMPLE
-    ./scripts/install.ps1 -Target cursor
+    ./scripts/install.cmd -Target cursor
 
 .EXAMPLE
-    ./scripts/install.ps1 -Target claude -Skill prz-grillme, prz-plan -Force
+    ./scripts/install.cmd -Target claude -Skill "prz-grillme,prz-plan" -Force
 
 .EXAMPLE
-    ./scripts/install.ps1 -Target cursor -Project ../my-app
+    ./scripts/install.cmd -Target cursor -Project ../my-app
 
 .EXAMPLE
-    ./scripts/install.ps1 -Target cursor -List
+    ./scripts/install.cmd -Target cursor -List
 
 .EXAMPLE
-    ./scripts/install.ps1 -Target cursor -Uninstall -Skill prz-plan
+    ./scripts/install.cmd -Target cursor -Uninstall -Skill prz-plan
 #>
 [CmdletBinding()]
 param(
@@ -52,6 +52,16 @@ $ErrorActionPreference = 'Stop'
 
 if ($Uninstall -and $List) { throw '-Uninstall and -List cannot be combined.' }
 if (($Uninstall -or $List) -and $Copy) { throw '-Copy only applies to installs.' }
+
+# install.cmd forwards -Skill as one comma-separated string. Direct PowerShell
+# calls already pass a string array. Split either form into names.
+if ($Skill) {
+    $Skill = @(
+        $Skill | ForEach-Object { $_ -split ',' } |
+            ForEach-Object { $_.Trim() } |
+            Where-Object { $_ }
+    )
+}
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $skillsRoot = Join-Path $repoRoot 'skills'

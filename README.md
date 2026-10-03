@@ -19,8 +19,9 @@ prz-skills/
 ├── template/SKILL.md       # Starting point for new skills
 ├── scripts/
 │   ├── validate-skills.py  # Lints every skills/*/SKILL.md
-│   ├── install.ps1         # Install/uninstall/list skills (Windows)
-│   └── install.sh          # Same, for macOS/Linux
+│   ├── install.cmd         # Windows entry point (avoids the execution policy)
+│   ├── install.ps1         # Installer used by install.cmd
+│   └── install.sh          # Same installer, for macOS/Linux
 ├── AGENTS.md               # Instructions for AI agents working in this repo
 └── CONTRIBUTING.md         # How to write a new skill
 ```
@@ -73,13 +74,20 @@ folder goes directly inside it (e.g. `~/.cursor/skills/example-skill/SKILL.md`).
 
 ### With the install scripts
 
-Use `scripts/install.ps1` on Windows (PowerShell) and `scripts/install.sh` on
-macOS/Linux. Both take the same options:
+Use `scripts/install.cmd` on Windows and `scripts/install.sh` on macOS/Linux.
+Both take the same options.
 
-| PowerShell | Bash | Meaning |
+`install.cmd` is the Windows entry point because Windows often refuses to run
+a `.ps1` file when the execution policy is Restricted. The launcher runs
+`install.ps1` with that policy bypassed for the one process. It does not change
+the setting for the user or the machine. From PowerShell, quote a
+comma-separated `-Skill` list (`-Skill "prz-grillme,prz-plan"`). A space after
+the comma is split by PowerShell before the launcher sees it.
+
+| Windows | Bash | Meaning |
 | --- | --- | --- |
 | `-Target cursor\|claude\|agents` | `--target ...` | Required. Which agent's skills directory to use. |
-| `-Skill a, b` | `--skill a --skill b` | Only these skills (default: all). |
+| `-Skill "a,b"` | `--skill a --skill b` | Only these skills (default: all). |
 | `-Project <path>` | `--project <path>` | Use `<path>/.<target>/skills` instead of the user-level directory. |
 | `-Copy` | `--copy` | Copy instead of symlinking. |
 | `-Force` | `--force` | Replace existing installs; allow removing copies. |
@@ -88,14 +96,14 @@ macOS/Linux. Both take the same options:
 
 ```powershell
 # Windows: all skills for Cursor (user level)
-./scripts/install.ps1 -Target cursor
+./scripts/install.cmd -Target cursor
 
 # Two skills, only inside one project
-./scripts/install.ps1 -Target cursor -Project ../my-app -Skill prz-grillme, prz-plan
+./scripts/install.cmd -Target cursor -Project ../my-app -Skill "prz-grillme,prz-plan"
 
 # What is installed, and remove one skill
-./scripts/install.ps1 -Target cursor -List
-./scripts/install.ps1 -Target cursor -Uninstall -Skill prz-plan
+./scripts/install.cmd -Target cursor -List
+./scripts/install.cmd -Target cursor -Uninstall -Skill prz-plan
 ```
 
 ```bash

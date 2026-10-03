@@ -26,7 +26,7 @@ when `SKILL.md` points to them. Write with that progressive loading in mind.
    without installing it globally, use `-Project` / `--project`:
 
    ```powershell
-   ./scripts/install.ps1 -Target cursor -Skill <name> -Project ../some-project
+   ./scripts/install.cmd -Target cursor -Skill <name> -Project ../some-project
    ```
 
    ```bash
