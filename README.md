@@ -19,7 +19,8 @@ prz-skills/
 ├── template/SKILL.md       # Starting point for new skills
 ├── scripts/
 │   ├── validate-skills.py  # Lints every skills/*/SKILL.md
-│   └── install.ps1         # Links skills into your agent's skills directory
+│   ├── install.ps1         # Install/uninstall/list skills (Windows)
+│   └── install.sh          # Same, for macOS/Linux
 ├── AGENTS.md               # Instructions for AI agents working in this repo
 └── CONTRIBUTING.md         # How to write a new skill
 ```
@@ -70,22 +71,55 @@ folder goes directly inside it (e.g. `~/.cursor/skills/example-skill/SKILL.md`).
 | Claude Code | `~/.claude/skills/` | `.claude/skills/` |
 | Codex / generic | `~/.agents/skills/` | `.agents/skills/` |
 
-### With the install script (Windows / PowerShell)
+### With the install scripts
+
+Use `scripts/install.ps1` on Windows (PowerShell) and `scripts/install.sh` on
+macOS/Linux. Both take the same options:
+
+| PowerShell | Bash | Meaning |
+| --- | --- | --- |
+| `-Target cursor\|claude\|agents` | `--target ...` | Required. Which agent's skills directory to use. |
+| `-Skill a, b` | `--skill a --skill b` | Only these skills (default: all). |
+| `-Project <path>` | `--project <path>` | Use `<path>/.<target>/skills` instead of the user-level directory. |
+| `-Copy` | `--copy` | Copy instead of symlinking. |
+| `-Force` | `--force` | Replace existing installs; allow removing copies. |
+| `-Uninstall` | `--uninstall` | Remove the selected skills. |
+| `-List` | `--list` | Show each skill's status: `linked`, `linked elsewhere`, `copied`, `not installed`, or `external`. |
 
 ```powershell
-# Link every skill into Cursor's user skills directory
+# Windows: all skills for Cursor (user level)
 ./scripts/install.ps1 -Target cursor
 
-# Link a single skill into Claude Code
-./scripts/install.ps1 -Target claude -Skill example-skill
+# Two skills, only inside one project
+./scripts/install.ps1 -Target cursor -Project ../my-app -Skill prz-grillme, prz-plan
 
-# Copy instead of symlinking
-./scripts/install.ps1 -Target agents -Copy
+# What is installed, and remove one skill
+./scripts/install.ps1 -Target cursor -List
+./scripts/install.ps1 -Target cursor -Uninstall -Skill prz-plan
 ```
 
-Symlinks keep installed skills in sync with this repo. Creating symlinks on
-Windows requires Developer Mode or an elevated shell; the script falls back to
-copying when it can't create a link.
+```bash
+# macOS/Linux: all skills for Claude Code (user level)
+./scripts/install.sh --target claude
+
+# Two skills, only inside one project
+./scripts/install.sh --target claude --project ../my-app --skill prz-grillme --skill prz-plan
+
+# What is installed, and remove one skill
+./scripts/install.sh --target claude --list
+./scripts/install.sh --target claude --uninstall --skill prz-plan
+```
+
+Notes:
+
+- Symlinks keep installed skills in sync with this repo. Creating symlinks on
+  Windows requires Developer Mode or an elevated shell; both scripts fall back
+  to copying when they can't create a link.
+- Copies do not update by themselves: reinstall with `-Force` / `--force` after
+  changing a skill.
+- Uninstall only touches skills whose names exist in this repo. Links to this
+  repo are removed directly; copies and links pointing elsewhere need
+  `-Force` / `--force`, since they may contain local changes.
 
 ### Manually
 

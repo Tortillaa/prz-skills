@@ -22,8 +22,18 @@ when `SKILL.md` points to them. Write with that progressive loading in mind.
    - `assets/` for templates, boilerplate or files copied into outputs.
 5. Add a row to the Skills table in `README.md`.
 6. Validate: `python scripts/validate-skills.py`.
-7. Install locally (`./scripts/install.ps1 -Target cursor -Skill <name>`) and
-   try it on a real task.
+7. Install it and try it on a real task. To test it inside a single project
+   without installing it globally, use `-Project` / `--project`:
+
+   ```powershell
+   ./scripts/install.ps1 -Target cursor -Skill <name> -Project ../some-project
+   ```
+
+   ```bash
+   ./scripts/install.sh --target cursor --skill <name> --project ../some-project
+   ```
+
+   Remove it afterwards with `-Uninstall` / `--uninstall` and the same options.
 
 ## Frontmatter
 
