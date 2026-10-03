@@ -29,6 +29,35 @@ prz-skills/
 | Skill | Description |
 | --- | --- |
 | [example-skill](skills/example-skill/SKILL.md) | Reference skill showing the expected structure and conventions. |
+| [prz-initrepo](skills/prz-initrepo/SKILL.md) | Plans the base of a new or reworked repo (stack, structure, tooling, conventions) and optionally scaffolds it. |
+| [prz-grillme](skills/prz-grillme/SKILL.md) | Grills the user about an idea one question at a time and saves the record as markdown. |
+| [prz-plan](skills/prz-plan/SKILL.md) | Builds an implementation plan from a saved grill (recommended) or a prompt. |
+| [prz-review](skills/prz-review/SKILL.md) | Reviews the implementation against the plan and grill and reports GO / NO GO with evidence. |
+| [prz-doc](skills/prz-doc/SKILL.md) | Keeps documentation and comments consistent in style and in sync with the code. |
+
+## prz workflow
+
+The `prz-*` skills form a workflow. They are only run when invoked explicitly
+(e.g. `/prz-grillme`) and hand work to each other through markdown files in a
+`.prz/` folder in the target project:
+
+```
+.prz/
+├── repo/plan.md        # prz-initrepo: repository foundation
+├── doc-style.md        # prz-doc: documentation style guide
+└── <feature-slug>/
+    ├── grill.md        # prz-grillme
+    ├── plan.md         # prz-plan
+    └── review.md       # prz-review
+```
+
+1. **Once per repo**: `prz-initrepo` to agree on the stack, structure and
+   conventions (and scaffold them).
+2. **Per feature**: `prz-grillme` -> `prz-plan` -> implement -> `prz-doc` ->
+   `prz-review` (GO / NO GO).
+
+Decisions (`D-n`), acceptance criteria (`AC-n`) and tasks (`T-n`) keep stable
+IDs so each step can trace back to the previous one.
 
 ## Installing skills
 
